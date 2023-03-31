@@ -171,6 +171,7 @@ class MoveSolver {
         } else {
             currentMoveState = previousStates.removeLast()
             currentMoves.removeLast()
+            solverState = .Placing
         }
     }
 }
