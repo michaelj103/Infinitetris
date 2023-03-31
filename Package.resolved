@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "tetrominocore",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/michaelj103/TetrominoCore.git",
+      "state" : {
+        "branch" : "infinitetris",
+        "revision" : "6ce7f5dc508f85ee1db5df035339e5cd7b8581ab"
+      }
+    }
+  ],
+  "version" : 2
+}
