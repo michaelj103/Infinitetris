@@ -170,7 +170,11 @@ class MoveSolver {
             solverState = .Done
         } else {
             currentMoveState = previousStates.removeLast()
-            currentMoves.removeLast()
+            let removedMove = currentMoves.removeLast()
+            let piece = Piece.defaultPieces[removedMove.id]
+            let rotation = piece.rotations[removedMove.rotation]
+            let pos = removedMove.position
+            board.removePiece(rotation, at: pos)
             solverState = .Placing
         }
     }

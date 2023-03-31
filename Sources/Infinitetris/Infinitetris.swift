@@ -7,7 +7,7 @@ public struct Infinitetris {
         let size = Size(width: 10, height: 20)
         let solver = MoveSolver(size)
 //        solver.randomGenerator = LinearCongruentialGenerator(seed: 7161991)
-        let moves = solver.runUntilNextClear(1)
+        let moves = solver.runUntilNextClear(4)
         
         if moves.count > 0 {
             let output = PiecePrinter.GenerateString(size, placements: moves, store: DefaultPieceIdentifier())
