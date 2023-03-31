@@ -9,6 +9,7 @@ import TetrominoCore
 
 class MoveSolver {
     var randomGenerator: RandomNumberGenerator = SystemRandomNumberGenerator()
+    var maxAllowedGrowth = 6
     
     private var currentMoveState: MoveState? = nil
     private var previousStates: [MoveState] = []
@@ -28,8 +29,14 @@ class MoveSolver {
     private var solverState = SolverState.Placing
     
     private var requiredClearanceCount = 4
+    private var initialPlacementHeight = 0
     func runUntilNextClear(_ rowsToClear: Int) -> [PlacedPiece] {
+        self.currentMoveState = nil
+        self.previousStates = []
+        self.currentMoves = []
+        self.initialPlacementHeight = board.getFilledHeight()
         self.requiredClearanceCount = rowsToClear
+        solverState = .Placing
         _runInternal()
         return currentMoves
     }
@@ -126,6 +133,11 @@ class MoveSolver {
             return nil
         }
         
+        let newHeight = board.size.height - upToRow - clearedCount
+        if newHeight - initialPlacementHeight > maxAllowedGrowth {
+            return nil
+        }
+        
         // next, check for overhangs
         for col in colRange {
             var emptySeen = false
@@ -160,5 +172,18 @@ class MoveSolver {
             currentMoveState = previousStates.removeLast()
             currentMoves.removeLast()
         }
+    }
+}
+
+fileprivate extension PieceBoard {
+    func getFilledHeight() -> Int {
+        for row in 0..<size.height {
+            for col in 0..<size.width {
+                if isFilled(at: Point(x: col, y: row)) {
+                    return size.height - row
+                }
+            }
+        }
+        return 0
     }
 }
