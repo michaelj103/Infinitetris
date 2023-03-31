@@ -61,6 +61,7 @@ class MoveSolver {
             // Tried all valid moves. need to backtrack
             currentMoveState = nil
             solverState = .Backtracking
+            return
         }
         let currentState = currentMoveState!
         
