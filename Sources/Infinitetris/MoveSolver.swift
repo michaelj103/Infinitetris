@@ -14,9 +14,8 @@ class MoveSolver {
     private var currentMoveState: MoveState? = nil
     private var previousStates: [MoveState] = []
     private var currentMoves: [PlacedPiece] = []
-    private var board: PieceBoard
+    let board: PieceBoard
     
-    // TODO: Some way to specify initial board state
     init(_ dimensions: Size) {
         board = PieceBoard(dimensions)
     }
