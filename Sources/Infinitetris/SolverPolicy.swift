@@ -15,11 +15,11 @@ struct SolverPolicy {
 }
 
 protocol SolverPolicyProvider {
-    func policy(initialBoard: PieceBoard) -> SolverPolicy
+    func policy(initialBoard: PieceBoard<Bool>) -> SolverPolicy
 }
 
 struct StandardPolicyProvider: SolverPolicyProvider {
-    func policy(initialBoard: PieceBoard) -> SolverPolicy {
+    func policy(initialBoard: PieceBoard<Bool>) -> SolverPolicy {
         let boardHeight = initialBoard.getFilledHeight()
         
         let maxIntermediate = 16 - boardHeight

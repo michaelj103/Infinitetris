@@ -14,10 +14,10 @@ class MoveSolver {
     private var currentMoveState: MoveState? = nil
     private var previousStates: [MoveState] = []
     private var currentMoves: [PlacedPiece] = []
-    let board: PieceBoard
+    let board: PieceBoard<Bool>
     
     init(_ dimensions: Size) {
-        board = PieceBoard(dimensions)
+        board = PieceBoard(dimensions, unfilled: false)
     }
     
     private enum SolverState {
@@ -83,7 +83,7 @@ class MoveSolver {
         var placementType: ValidPlacementType?
         for row in (0..<board.size.height).reversed() {
             let pos = Point(x: column, y: row)
-            if board.addPiece(rotation, at: pos) {
+            if board.addPiece(rotation, at: pos, with: true) {
                 let colRange = column..<(column + rotation.size.width)
                 if let placement = _validatePlacement(colRange: colRange, upToRow: row) {
                     // added successfully. Push the move and state onto the stack
