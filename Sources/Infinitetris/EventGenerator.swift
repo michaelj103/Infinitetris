@@ -83,7 +83,14 @@ class MoveEventGenerator {
         
         // then move horizontally, dropping if a drop happens
         let finalX = placedPiece.position.x
-        for x in min(initialXPos, finalX)...max(initialXPos, finalX) {
+        let xRange: [Int]
+        if initialXPos <= finalX {
+            xRange = Array(initialXPos...finalX)
+        } else {
+            xRange = (finalX...initialXPos).reversed()
+        }
+        
+        for x in xRange {
             let nextPlacement = PlacedPiece(id: placedPiece.id, rotation: finalRotationIdx, position: Point(x: x, y: currentYPos))
             placements.append((nextPlacement, elapsedTime))
             elapsedTime += horizontalMoveTime
