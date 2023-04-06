@@ -16,7 +16,7 @@ import TetrominoCore
 class GIFAnimator: Animator {
     
     private var imageDest: CGImageDestination?
-    private var displayBoard: PieceBoard<Int?>?
+    private var displayBoard: DisplayBoard?
     
     var requiresPrecomputation: Bool { return true }
     
@@ -25,7 +25,7 @@ class GIFAnimator: Animator {
             let url = URL(filePath: "/Users/mjb/Desktop/infinitetris.gif")
             let properties = [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFLoopCount:0]]
             imageDest = CGImageDestinationCreateWithURL(url as CFURL, UTType.gif.identifier as CFString, allEvents!.count, properties as CFDictionary)
-            displayBoard = PieceBoard<Int?>(dimensions, unfilled: nil)
+            displayBoard = DisplayBoard(dimensions: dimensions)
         } else {
             preconditionFailure()
         }
@@ -46,26 +46,15 @@ class GIFAnimator: Animator {
     }
     
     private func _updateForAppear(_ appear: AppearEvent) {
-        let placement = appear.placement
-        let piece = Piece.defaultPieces[placement.id]
-        let rotation = piece.rotations[placement.rotation]
-        displayBoard!.addPiece(rotation, at: placement.position, with: appear.pieceID)
+        displayBoard!.updateForAppear(appear)
     }
     
     private func _updateForMove(_ move: MoveEvent) {
-        let beforePlacement = move.beforeState
-        let beforePiece = Piece.defaultPieces[beforePlacement.id]
-        let beforeRotation = beforePiece.rotations[beforePlacement.rotation]
-        displayBoard!.removePiece(beforeRotation, at: beforePlacement.position)
-        
-        let afterPlacement = move.afterState
-        let afterPiece = Piece.defaultPieces[afterPlacement.id]
-        let afterRotation = afterPiece.rotations[afterPlacement.rotation]
-        displayBoard!.addPiece(afterRotation, at: afterPlacement.position, with: move.pieceID)
+        displayBoard!.updateForMove(move)
     }
     
     private func _updateForClear(_ clear: ClearEvent) {
-        displayBoard!.clearCompletedRows()
+        displayBoard!.updateForClear(clear)
     }
     
     private func _addFrame(duration: Double) {
@@ -73,23 +62,23 @@ class GIFAnimator: Animator {
         var data = [UInt8](repeating: 0, count: count)
         for py in 0..<64 {
             for px in 0..<32 {
-                let isFilled: Bool
+                let color: DisplayColor?
                 let isOOB: Bool
                 if px >= 1 && px < 31 && py >= 4 {
                     let boardX = (px - 1) / 3
                     let boardY = (py - 4) / 3
-                    isFilled = displayBoard!.isFilled(at: Point(x: boardX, y: boardY))
+                    color = displayBoard!.getColor(at: Point(x: boardX, y: boardY))
                     isOOB = false
                 } else {
-                    isFilled = false
+                    color = nil
                     isOOB = true
                 }
                 
                 let baseIdx = ((py * 32) + px) * 4
-                if isFilled {
-                    data[baseIdx] = 180
-                    data[baseIdx + 1] = 180
-                    data[baseIdx + 2] = 180
+                if let color {
+                    data[baseIdx] = color.r
+                    data[baseIdx + 1] = color.g
+                    data[baseIdx + 2] = color.b
                     data[baseIdx + 3] = 255
                 } else {
                     data[baseIdx] = isOOB ? 0 : 255
@@ -117,8 +106,6 @@ class GIFAnimator: Animator {
         }
         imageDest = nil
     }
-    
-    
 }
 
 #endif
