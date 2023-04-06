@@ -74,12 +74,15 @@ class GIFAnimator: Animator {
         for py in 0..<64 {
             for px in 0..<32 {
                 let isFilled: Bool
+                let isOOB: Bool
                 if px >= 1 && px < 31 && py >= 4 {
                     let boardX = (px - 1) / 3
                     let boardY = (py - 4) / 3
                     isFilled = displayBoard!.isFilled(at: Point(x: boardX, y: boardY))
+                    isOOB = false
                 } else {
                     isFilled = false
+                    isOOB = true
                 }
                 
                 let baseIdx = ((py * 32) + px) * 4
@@ -89,9 +92,9 @@ class GIFAnimator: Animator {
                     data[baseIdx + 2] = 180
                     data[baseIdx + 3] = 255
                 } else {
-                    data[baseIdx] = 255
-                    data[baseIdx + 1] = 255
-                    data[baseIdx + 2] = 255
+                    data[baseIdx] = isOOB ? 0 : 255
+                    data[baseIdx + 1] = isOOB ? 0 : 255
+                    data[baseIdx + 2] = isOOB ? 0 : 255
                     data[baseIdx + 3] = 255
                 }
             }
