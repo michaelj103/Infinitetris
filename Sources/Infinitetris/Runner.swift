@@ -20,6 +20,7 @@ class Runner {
         self.animator = animator
     }
     
+    private var runningContinuously = false
     private var completion: (()->Void)?
     func runFinite(_ numClears: Int, completion: @escaping ()->Void) {
         precondition(numClears > 0, "Must run with positive number of clears")
@@ -29,6 +30,7 @@ class Runner {
         animator.prepare(dimensions: solver.board.size, allEvents: eventQueue)
         
         self.completion = completion
+        runningContinuously = false
         _runNextEvent()
     }
     
@@ -38,6 +40,7 @@ class Runner {
             guard _generateClearance() else { preconditionFailure("Failed to generate clearance") }
         }
         
+        runningContinuously = true
         animator.prepare(dimensions: solver.board.size, allEvents: nil)
         _runNextEvent()
     }
@@ -53,6 +56,11 @@ class Runner {
         }
         
         let nextEvent = eventQueue.removeFirst()
+        if runningContinuously, case .clear = nextEvent {
+            if !_generateClearance() {
+                preconditionFailure("Failed to generate clearance")
+            }
+        }
         animator.animateEvent(nextEvent) {
             self._runNextEvent()
         }

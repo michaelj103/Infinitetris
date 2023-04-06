@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "swiftled",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/michaelj103/SwiftLED.git",
+      "state" : {
+        "revision" : "e0b7da94e0fa85e314965d8164fb6b290a254123",
+        "version" : "0.1.0"
+      }
+    },
+    {
       "identity" : "tetrominocore",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/michaelj103/TetrominoCore.git",
