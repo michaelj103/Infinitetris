@@ -5,7 +5,7 @@
 //  Created by Michael Brandt on 4/5/23.
 //
 
-#if os(macOS)
+#if !os(Linux)
 
 import Foundation
 import ImageIO
@@ -31,7 +31,7 @@ class GIFAnimator: Animator {
         }
     }
     
-    func animateEvent(_ event: SimulationEvent) {
+    func animateEvent(_ event: SimulationEvent, completion: @escaping () -> Void) {
         switch event {
         case .appear(let appearEvent):
             _updateForAppear(appearEvent)
@@ -42,6 +42,9 @@ class GIFAnimator: Animator {
         case .clear(let clearEvent):
             _updateForClear(clearEvent)
             _addFrame(duration: 0.5)
+        }
+        DispatchQueue.main.async {
+            completion()
         }
     }
     

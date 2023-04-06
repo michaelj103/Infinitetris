@@ -1,12 +1,20 @@
 import TetrominoCore
+import Dispatch
 
 @main
 public struct Infinitetris {
 
     public static func main() {
         let size = Size(width: 10, height: 20)
+#if os(Linux)
+        
+#else
         let runner = Runner(size, animator: GIFAnimator())
-        runner.run(10)
+        runner.runFinite(10) {
+            exit(0)
+        }
+#endif
+        dispatchMain()
     }
     
     private struct DefaultPieceIdentifier: PieceIdentifying {

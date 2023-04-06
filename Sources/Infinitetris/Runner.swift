@@ -20,23 +20,44 @@ class Runner {
         self.animator = animator
     }
     
-    func run(_ numClears: Int) {
-        let requiresPrecomputation = animator.requiresPrecomputation
-        if requiresPrecomputation {
-            for _ in 0..<numClears {
-                guard _generateClearance() else { preconditionFailure("Failed to generate clearance") }
-            }
-            animator.prepare(dimensions: solver.board.size, allEvents: eventQueue)
-        } else {
-            animator.prepare(dimensions: solver.board.size, allEvents: nil)
+    private var completion: (()->Void)?
+    func runFinite(_ numClears: Int, completion: @escaping ()->Void) {
+        precondition(numClears > 0, "Must run with positive number of clears")
+        for _ in 0..<numClears {
+            guard _generateClearance() else { preconditionFailure("Failed to generate clearance") }
         }
+        animator.prepare(dimensions: solver.board.size, allEvents: eventQueue)
         
-        for event in eventQueue {
-            animator.animateEvent(event)
-        }
-        animator.finalize()
+        self.completion = completion
+        _runNextEvent()
     }
     
+    func run() {
+        precondition(!animator.requiresPrecomputation, "Animator does not support infinite play")
+        for _ in 0..<2 {
+            guard _generateClearance() else { preconditionFailure("Failed to generate clearance") }
+        }
+        
+        animator.prepare(dimensions: solver.board.size, allEvents: nil)
+        _runNextEvent()
+    }
+    
+    private func _runNextEvent() {
+        guard !eventQueue.isEmpty else {
+            animator.finalize()
+            if let completion {
+                completion()
+            }
+            completion = nil
+            return
+        }
+        
+        let nextEvent = eventQueue.removeFirst()
+        animator.animateEvent(nextEvent) {
+            self._runNextEvent()
+        }
+    }
+        
     private func _generateClearance() -> Bool {
         let order = _clearanceOrder()
         var moves: [PlacedPiece] = []

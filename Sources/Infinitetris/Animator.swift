@@ -11,7 +11,6 @@ protocol Animator {
     var requiresPrecomputation: Bool { get }
     // allEvents is nil unless requiresPrecomputation is true
     func prepare(dimensions: Size, allEvents: [SimulationEvent]?)
-//    func animateEvent(_ event: SimulationEvent, completion: ()->Void)
-    func animateEvent(_ event: SimulationEvent)
+    func animateEvent(_ event: SimulationEvent, completion: @escaping ()->Void)
     func finalize()
 }
