@@ -7,6 +7,12 @@
 
 import TetrominoCore
 
+struct AppearEvent {
+    let pieceID: Int
+    let placement: PlacedPiece
+    let duration: Double
+}
+
 struct MoveEvent {
     let pieceID: Int
     let beforeState: PlacedPiece
@@ -19,6 +25,7 @@ struct ClearEvent {
 }
 
 enum SimulationEvent {
+    case appear(AppearEvent)
     case move(MoveEvent)
     case clear(ClearEvent)
 }
@@ -111,15 +118,17 @@ class MoveEventGenerator {
     private func _moveEventsForKeyframes(_ keyframes: [(PlacedPiece, Double)], pieceID: Int) -> [SimulationEvent] {
         var events: [SimulationEvent] = []
         
-        var prevPlacement: PlacedPiece?
-        var prevTime: Double?
-        for (placement, time) in keyframes {
-            if let prevPlacement, let prevTime {
-                let moveEvent = MoveEvent(pieceID: pieceID, beforeState: prevPlacement, afterState: placement, duration: time - prevTime)
-                events.append(.move(moveEvent))
-            }
-            prevPlacement = placement
-            prevTime = time
+        let initialPlacement = keyframes[0].0
+        let initialDuration = keyframes[1].1
+        let appearEvent = AppearEvent(pieceID: pieceID, placement: initialPlacement, duration: initialDuration)
+        events.append(.appear(appearEvent))
+        
+        for i in 1..<(keyframes.count-1) {
+            let (thisPlacement, thisTime) = keyframes[i]
+            let (prevPlacement, _) = keyframes[i - 1]
+            let (_, nextTime) = keyframes[i + 1]
+            let moveEvent = MoveEvent(pieceID: pieceID, beforeState: prevPlacement, afterState: thisPlacement, duration: nextTime - thisTime)
+            events.append(.move(moveEvent))
         }
         
         return events
