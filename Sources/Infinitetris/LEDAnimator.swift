@@ -33,6 +33,7 @@ class LEDAnimator: Animator {
         runtimeOptions.gpio_slowdown = 4
         
         let matrix = LEDMatrix(options: options, runtimeOptions: runtimeOptions)
+        self.matrix = matrix
         
         guard let canvas = matrix.getCanvas() else {
             preconditionFailure("Failed to get canvas")
@@ -45,8 +46,6 @@ class LEDAnimator: Animator {
         }
         self.offscreenCanvas = offscreenCanvas
     }
-    
-    
     
     func animateEvent(_ event: SimulationEvent, completion: @escaping () -> Void) {
         switch event {
