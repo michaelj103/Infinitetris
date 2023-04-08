@@ -26,10 +26,10 @@ struct MoveState {
         return columnOrder[columnIdx]
     }
     
-    static func randomMoveState(using rng: inout RandomNumberGenerator, columnCount: Int = 10) -> MoveState {
-        let pieceOrder = Array(0..<Piece.defaultPieces.count).shuffled(using: &rng)
-        let rotationOrder = Array(0..<4).shuffled(using: &rng)
-        let columnOrder = Array(0..<columnCount).shuffled(using: &rng)
+    static func randomMoveState(using rng: RandomSource, columnCount: Int = 10) -> MoveState {
+        let pieceOrder = rng.shuffle(Array(0..<Piece.defaultPieces.count))
+        let rotationOrder = rng.shuffle(Array(0..<4))
+        let columnOrder = rng.shuffle(Array(0..<columnCount))
         var state = MoveState(pieceOrder: pieceOrder, rotationOrder: rotationOrder, columnOrder: columnOrder)
         state.setBaseRotation()
         return state

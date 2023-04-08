@@ -8,16 +8,17 @@
 import TetrominoCore
 
 class MoveSolver {
-    var randomGenerator: RandomNumberGenerator = SystemRandomNumberGenerator()
     var policyProvider: SolverPolicyProvider = StandardPolicyProvider()
     
     private var currentMoveState: MoveState? = nil
     private var previousStates: [MoveState] = []
     private var currentMoves: [PlacedPiece] = []
+    private let randomSource: RandomSource
     let board: PieceBoard<Bool>
     
-    init(_ dimensions: Size) {
+    init(_ dimensions: Size, randomSource: RandomSource = RandomSource()) {
         board = PieceBoard(dimensions, unfilled: false)
+        self.randomSource = randomSource
     }
     
     private enum SolverState {
@@ -57,7 +58,7 @@ class MoveSolver {
     
     private func _incrementState() -> Bool {
         if currentMoveState == nil {
-            currentMoveState = MoveState.randomMoveState(using: &randomGenerator)
+            currentMoveState = MoveState.randomMoveState(using: randomSource)
             return true
         } else {
             return currentMoveState!.increment()
@@ -91,11 +92,11 @@ class MoveSolver {
                     previousStates.append(currentState)
                     currentMoveState = nil
                     placementType = placement
-                    break
                 } else {
                     // Not valid placement by the current critera. Remove it
                     board.removePiece(rotation, at: pos)
                 }
+                break
             }
         }
         

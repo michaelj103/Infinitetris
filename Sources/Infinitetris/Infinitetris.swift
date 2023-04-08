@@ -15,6 +15,10 @@ public struct Infinitetris {
             exit(0)
         }
 #endif
+        
+//        let runner = Runner(size, animator: NopAnimator(), randomSource: RandomSource(seed: 7161991))
+//        runner.run()
+        
         dispatchMain()
     }
     

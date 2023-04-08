@@ -6,18 +6,22 @@
 //
 
 import TetrominoCore
+import OSLog
 
 class Runner {
     private let solver: MoveSolver
     private let moveGenerator: MoveEventGenerator
     private let animator: Animator
+    private let randomSource: RandomSource
     
     private var eventQueue: [SimulationEvent] = []
+    private var generationCount = 0
     
-    init(_ dimensions: Size, animator: Animator) {
-        solver = MoveSolver(dimensions)
+    init(_ dimensions: Size, animator: Animator, randomSource: RandomSource = RandomSource()) {
+        solver = MoveSolver(dimensions, randomSource: randomSource)
         moveGenerator = MoveEventGenerator(dimensions)
         self.animator = animator
+        self.randomSource = randomSource
     }
     
     private var runningContinuously = false
@@ -57,9 +61,12 @@ class Runner {
         
         let nextEvent = eventQueue.removeFirst()
         if runningContinuously, case .clear = nextEvent {
+            let count = generationCount
+//            os_log("Begin generation \(count)")
             if !_generateClearance() {
                 preconditionFailure("Failed to generate clearance")
             }
+//            os_log("End generation \(count)")
         }
         animator.animateEvent(nextEvent) {
             self._runNextEvent()
@@ -82,6 +89,7 @@ class Runner {
         let clearedRows = solver.board.clearCompletedRows()
         let clearEvent = ClearEvent(clearedRows: clearedRows)
         eventQueue.append(.clear(clearEvent))
+        generationCount += 1
         return true
     }
     
@@ -91,7 +99,7 @@ class Runner {
         var remaining = Array(1...4)
         while remaining.count > 1 {
             let total = remaining.reduce(0) { $0 + weights[$1]! }
-            var randIdx = Int.random(in: 0..<total)
+            var randIdx = randomSource.randRange(0..<total)
             var selectedIdx: Int?
             for (idx, rows) in remaining.enumerated() {
                 let weight = weights[rows]!
