@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/michaelj103/SwiftLED.git",
       "state" : {
-        "revision" : "e0b7da94e0fa85e314965d8164fb6b290a254123",
-        "version" : "0.1.0"
+        "revision" : "905fa50b34f2d819f24780c305b40596a0eead73",
+        "version" : "0.2.0"
       }
     },
     {
